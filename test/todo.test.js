@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage, EMPTY_FILTER_MESSAGE } from "../src/todo.js";
+import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage, deleteConfirmMessage, EMPTY_FILTER_MESSAGE } from "../src/todo.js";
 
 test("addTodo appends a trimmed title with the next id", () => {
   const one = addTodo([], "  Buy milk ");
@@ -91,6 +91,12 @@ test("emptyFilterMessage shows the required sentence for every empty filter and 
   const activeOnly = addTodo([], "a");
   assert.equal(emptyFilterMessage(visibleTodos(activeOnly, "done")), EMPTY_FILTER_MESSAGE);
   assert.equal(emptyFilterMessage(visibleTodos(activeOnly, "active")), "");
+});
+
+test("deleteConfirmMessage names the task and warns that deletion is final", () => {
+  assert.equal(deleteConfirmMessage("Buy milk"), 'Delete "Buy milk"? This cannot be undone.');
+  assert.match(deleteConfirmMessage("Walk dog"), /Walk dog/);
+  assert.match(deleteConfirmMessage("Sign in to Orbi Cloud"), /cannot be undone/);
 });
 
 test("emptyFilterMessage follows add, toggle, delete and Clear completed", () => {

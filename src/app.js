@@ -1,4 +1,4 @@
-import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage } from "./todo.js";
+import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage, deleteConfirmMessage } from "./todo.js";
 
 let todos = [
   { id: 1, title: "Sign in to Orbi Cloud", done: true },
@@ -49,6 +49,10 @@ function render() {
     del.textContent = "Delete";
     del.setAttribute("aria-label", `Delete ${todo.title}`);
     del.addEventListener("click", () => {
+      if (!window.confirm(deleteConfirmMessage(todo.title))) {
+        status.textContent = "Delete cancelled.";
+        return;
+      }
       todos = removeTodo(todos, todo.id);
       render();
       focusTask("button", index);
