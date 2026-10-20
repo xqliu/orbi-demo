@@ -9,7 +9,9 @@ test("HTTP_root_serves_the_app", async (t) => {
   const response = await fetch(`http://127.0.0.1:${server.address().port}/`);
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type"), /text\/html/);
-  assert.match(await response.text(), /id="new-todo"/);
+  const html = await response.text();
+  assert.match(html, /id="new-todo"/);
+  assert.match(html, /id="empty-list"[^>]*hidden/);
 });
 
 test("HTTP_public_assets_HEAD_and_errors", async (t) => {

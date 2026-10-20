@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel } from "../src/todo.js";
+import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage, EMPTY_FILTER_MESSAGE } from "../src/todo.js";
 
 test("addTodo appends a trimmed title with the next id", () => {
   const one = addTodo([], "  Buy milk ");
@@ -74,4 +74,40 @@ test("remainingLabel keeps its count after clearCompleted and filter changes", (
   assert.equal(visibleTodos(todos, "done").length, 1);
   assert.equal(remainingLabel(todos), "2 items left");
   assert.equal(remainingLabel(clearCompleted(todos)), "2 items left");
+});
+
+test("emptyFilterMessage shows the required sentence for every empty filter and hides it otherwise", () => {
+  assert.equal(EMPTY_FILTER_MESSAGE, "当前没有符合筛选条件的待办。");
+  const todos = toggleTodo(addTodo(addTodo([], "a"), "b"), 1);
+  for (const filter of ["all", "active", "done"]) {
+    assert.equal(emptyFilterMessage(visibleTodos(todos, filter)), "", filter);
+  }
+  assert.equal(emptyFilterMessage(visibleTodos([], "all")), EMPTY_FILTER_MESSAGE);
+  assert.equal(emptyFilterMessage(visibleTodos([], "active")), EMPTY_FILTER_MESSAGE);
+  assert.equal(emptyFilterMessage(visibleTodos([], "done")), EMPTY_FILTER_MESSAGE);
+  const doneOnly = toggleTodo(addTodo([], "a"), 1);
+  assert.equal(emptyFilterMessage(visibleTodos(doneOnly, "active")), EMPTY_FILTER_MESSAGE);
+  assert.equal(emptyFilterMessage(visibleTodos(doneOnly, "done")), "");
+  const activeOnly = addTodo([], "a");
+  assert.equal(emptyFilterMessage(visibleTodos(activeOnly, "done")), EMPTY_FILTER_MESSAGE);
+  assert.equal(emptyFilterMessage(visibleTodos(activeOnly, "active")), "");
+});
+
+test("emptyFilterMessage follows add, toggle, delete and Clear completed", () => {
+  const shown = (todos, filter) => emptyFilterMessage(visibleTodos(todos, filter)) === EMPTY_FILTER_MESSAGE;
+  let todos = [];
+  assert.deepEqual(["all", "active", "done"].map((f) => shown(todos, f)), [true, true, true]);
+  todos = addTodo(todos, "a");
+  assert.deepEqual(["all", "active", "done"].map((f) => shown(todos, f)), [false, false, true]);
+  todos = toggleTodo(todos, 1);
+  assert.deepEqual(["all", "active", "done"].map((f) => shown(todos, f)), [false, true, false]);
+  todos = addTodo(todos, "b");
+  todos = clearCompleted(todos);
+  assert.deepEqual(["all", "active", "done"].map((f) => shown(todos, f)), [false, false, true]);
+  todos = toggleTodo(todos, 2);
+  todos = clearCompleted(todos);
+  assert.deepEqual(["all", "active", "done"].map((f) => shown(todos, f)), [true, true, true]);
+  todos = addTodo(addTodo(todos, "c"), "d");
+  todos = removeTodo(todos, 3);
+  assert.deepEqual(["all", "active", "done"].map((f) => shown(todos, f)), [false, false, true]);
 });

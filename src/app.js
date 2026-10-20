@@ -1,4 +1,4 @@
-import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel } from "./todo.js";
+import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage } from "./todo.js";
 
 let todos = [
   { id: 1, title: "Sign in to Orbi Cloud", done: true },
@@ -58,12 +58,9 @@ function render() {
     item.append(label, del);
     return item;
   }));
-  empty.hidden = visible.length > 0;
-  empty.textContent = {
-    all: "No tasks yet. Add your first task above.",
-    active: "No active tasks. Choose All to see completed tasks, or add a new one.",
-    done: "No completed tasks. Check off a task in All to see it here.",
-  }[filter];
+  const emptyMessage = emptyFilterMessage(visible);
+  empty.textContent = emptyMessage;
+  empty.hidden = emptyMessage === "";
   for (const button of filters) {
     button.setAttribute("aria-pressed", String(button.dataset.filter === filter));
   }
