@@ -30,3 +30,10 @@ export function visibleTodos(todos, filter) {
   if (filter === "done") return todos.filter((t) => t.done);
   return todos;
 }
+
+// Shown under the list whenever the current filter has no visible todos.
+export const EMPTY_FILTER_MESSAGE = "当前没有符合筛选条件的待办。";
+
+export function emptyFilterMessage(visible) {
+  return visible.length === 0 ? EMPTY_FILTER_MESSAGE : "";
+}
