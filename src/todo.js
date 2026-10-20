@@ -25,10 +25,13 @@ export function remainingLabel(todos) {
   return `${count} ${count === 1 ? "item" : "items"} left`;
 }
 
+// Display order only: active todos first, then done ones, each group in creation
+// order. The stored array keeps creation order, so unchecking restores a todo to
+// its original place instead of the end.
 export function visibleTodos(todos, filter) {
   if (filter === "active") return todos.filter((t) => !t.done);
   if (filter === "done") return todos.filter((t) => t.done);
-  return todos;
+  return [...todos.filter((t) => !t.done), ...todos.filter((t) => t.done)];
 }
 
 // Shown under the list whenever the current filter has no visible todos.

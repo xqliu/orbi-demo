@@ -117,3 +117,79 @@ test("emptyFilterMessage follows add, toggle, delete and Clear completed", () =>
   todos = removeTodo(todos, 3);
   assert.deepEqual(["all", "active", "done"].map((f) => shown(todos, f)), [false, false, true]);
 });
+
+test("visibleTodos puts active todos first and keeps creation order in the all filter", () => {
+  let todos = addTodo(addTodo(addTodo([], "A"), "B"), "C");
+  todos = toggleTodo(todos, 2);
+  todos = toggleTodo(todos, 1);
+  assert.deepEqual(visibleTodos(todos, "all").map((t) => t.title), ["C", "A", "B"]);
+});
+
+test("visibleTodos returns an uncompleted todo to creation order inside the active group", () => {
+  let todos = addTodo(addTodo(addTodo([], "A"), "B"), "C");
+  todos = toggleTodo(todos, 2);
+  todos = toggleTodo(todos, 1);
+  todos = toggleTodo(todos, 2);
+  assert.deepEqual(visibleTodos(todos, "all").map((t) => t.title), ["B", "C", "A"]);
+  assert.deepEqual(visibleTodos(todos, "active").map((t) => t.title), ["B", "C"]);
+  assert.deepEqual(visibleTodos(todos, "done").map((t) => t.title), ["A"]);
+});
+
+test("visibleTodos keeps the partition stable across repeated filter switches", () => {
+  let todos = addTodo(addTodo(addTodo(addTodo([], "A"), "B"), "C"), "D");
+  todos = toggleTodo(todos, 3);
+  todos = toggleTodo(todos, 1);
+  todos = toggleTodo(todos, 4);
+  const expectedAll = ["B", "A", "C", "D"];
+  const expectedActive = ["B"];
+  const expectedDone = ["A", "C", "D"];
+  for (let i = 0; i < 3; i += 1) {
+    assert.deepEqual(visibleTodos(todos, "all").map((t) => t.title), expectedAll);
+    assert.deepEqual(visibleTodos(todos, "active").map((t) => t.title), expectedActive);
+    assert.deepEqual(visibleTodos(todos, "done").map((t) => t.title), expectedDone);
+  }
+});
+
+test("visibleTodos order follows creation order, not the order tasks were completed", () => {
+  const todos = addTodo(addTodo(addTodo(addTodo([], "A"), "B"), "C"), "D");
+  const completedInReverse = [4, 3, 2].reduce((acc, id) => toggleTodo(acc, id), todos);
+  const completedInOrder = [2, 3, 4].reduce((acc, id) => toggleTodo(acc, id), todos);
+  assert.deepEqual(
+    [completedInReverse, completedInOrder].map((list) => visibleTodos(list, "all").map((t) => t.title)),
+    [["A", "B", "C", "D"], ["A", "B", "C", "D"]],
+  );
+  assert.deepEqual(visibleTodos(completedInReverse, "done").map((t) => t.title), ["B", "C", "D"]);
+});
+
+test("visibleTodos does not mutate the stored array", () => {
+  let todos = addTodo(addTodo(addTodo([], "A"), "B"), "C");
+  todos = toggleTodo(todos, 2);
+  const snapshot = todos.slice();
+  const visible = visibleTodos(todos, "all");
+  assert.deepEqual(todos, snapshot);
+  assert.deepEqual(todos.map((t) => t.title), ["A", "B", "C"]);
+  assert.deepEqual(visible.map((t) => t.title), ["A", "C", "B"]);
+});
+
+test("visibleTodos empties the active filter when the last active todo is completed", () => {
+  let todos = toggleTodo(addTodo(addTodo([], "A"), "B"), 1);
+  assert.deepEqual(visibleTodos(todos, "active").map((t) => t.title), ["B"]);
+  todos = toggleTodo(todos, 2);
+  assert.deepEqual(visibleTodos(todos, "active"), []);
+  assert.equal(emptyFilterMessage(visibleTodos(todos, "active")), EMPTY_FILTER_MESSAGE);
+  assert.deepEqual(visibleTodos(todos, "all").map((t) => t.title), ["A", "B"]);
+  assert.deepEqual(visibleTodos(todos, "done").map((t) => t.title), ["A", "B"]);
+});
+
+test("visibleTodos applies the partition to the sample tasks on first load", () => {
+  const sample = [
+    { id: 1, title: "Sign in to Orbi Cloud", done: true },
+    { id: 2, title: "Connect your demo repository", done: true },
+    { id: 3, title: "Ask Orbi to add Clear completed", done: false },
+    { id: 4, title: "Open your delivered change", done: false },
+    { id: 5, title: "Connect your own project", done: false },
+  ];
+  assert.deepEqual(visibleTodos(sample, "all").map((t) => t.id), [3, 4, 5, 1, 2]);
+  assert.deepEqual(visibleTodos(sample, "active").map((t) => t.id), [3, 4, 5]);
+  assert.deepEqual(visibleTodos(sample, "done").map((t) => t.id), [1, 2]);
+});
