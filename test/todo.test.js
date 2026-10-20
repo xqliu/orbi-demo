@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted } from "../src/todo.js";
+import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel } from "../src/todo.js";
 
 test("addTodo appends a trimmed title with the next id", () => {
   const one = addTodo([], "  Buy milk ");
@@ -39,4 +39,39 @@ test("clearCompleted removes completed todos and keeps active ones", () => {
 test("clearCompleted keeps every todo when nothing is completed", () => {
   const todos = addTodo(addTodo([], "a"), "b");
   assert.deepEqual(clearCompleted(todos), todos);
+});
+
+test("remainingLabel counts only incomplete todos", () => {
+  const todos = [
+    { id: 1, title: "a", done: true },
+    { id: 2, title: "b", done: true },
+    { id: 3, title: "c", done: false },
+    { id: 4, title: "d", done: false },
+    { id: 5, title: "e", done: false },
+  ];
+  assert.equal(remainingLabel(todos), "3 items left");
+  assert.equal(remainingLabel([]), "0 items left");
+  assert.equal(remainingLabel([{ id: 1, title: "a", done: false }]), "1 item left");
+});
+
+test("remainingLabel follows toggles, additions and removals", () => {
+  let todos = addTodo(addTodo(addTodo([], "a"), "b"), "c");
+  assert.equal(remainingLabel(todos), "3 items left");
+  todos = toggleTodo(todos, 2);
+  assert.equal(remainingLabel(todos), "2 items left");
+  todos = toggleTodo(todos, 2);
+  assert.equal(remainingLabel(todos), "3 items left");
+  todos = addTodo(todos, "d");
+  assert.equal(remainingLabel(todos), "4 items left");
+  todos = removeTodo(todos, 4);
+  assert.equal(remainingLabel(todos), "3 items left");
+});
+
+test("remainingLabel keeps its count after clearCompleted and filter changes", () => {
+  const todos = toggleTodo(addTodo(addTodo(addTodo([], "a"), "b"), "c"), 2);
+  assert.equal(remainingLabel(todos), "2 items left");
+  assert.equal(visibleTodos(todos, "active").length, 2);
+  assert.equal(visibleTodos(todos, "done").length, 1);
+  assert.equal(remainingLabel(todos), "2 items left");
+  assert.equal(remainingLabel(clearCompleted(todos)), "2 items left");
 });
