@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A small todo list app for trying Orbi on your own copy.">
+  <title>Orbi Demo · Todo list</title>
+  <link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+  <main>
+    <header><a href="https://github.com/orbi-build/orbi-demo">Orbi Demo</a><span class="muted">Sample project</span></header>
+    <h1>Todo list</h1>
+    <p class="muted">A small sample app.</p>
+    <div class="app-layout">
+    <section class="card" aria-labelledby="list-heading">
+                <h2 id="list-heading">Today</h2>
+        <p class="muted">Two items start checked.</p>
+        <form class="todo-form" id="new-todo" novalidate>
+          <div>
+            <label for="title">What needs doing?</label>
+            <input id="title" type="text" placeholder="e.g. Try a second Orbi change" autocomplete="off" aria-describedby="input-error">
+          </div>
+          <button class="button" type="submit">Add</button>
+        </form>
+        <p id="input-error" class="error" role="alert" hidden>Enter a task first.</p>
+        <ul class="todo-list" id="list"></ul>
+        <p id="empty-list" class="muted" hidden></p>
+        <nav class="filters" aria-label="Filter tasks">
+          <button class="button secondary" type="button" data-filter="all" aria-pressed="true">All</button>
+          <button class="button secondary" type="button" data-filter="active" aria-pressed="false">Active</button>
+          <button class="button secondary" type="button" data-filter="done" aria-pressed="false">Done</button>
+        </nav>
+        <p id="app-status" class="muted" role="status" aria-live="polite"></p>
+        <noscript><p class="error">Enable JavaScript to use the task list.</p></noscript>
+    </section>
+    <aside class="about" aria-labelledby="about-heading">
+      <h2 id="about-heading">You write the issue. Orbi ships the change.</h2>
+      <p>Add the <code>ai-ready</code> label to a GitHub Issue. Orbi writes the code, a second AI reviews it, and Orbi merges it. You stay out of the editor.</p>
+      <p><a href="https://orbi.build/api/connect?ref=demo-app">Try it on your own repo →</a></p>
+      <p class="muted">Your first 3 merged changes are free. No credit card required.</p>
+    </aside>
+    </div>
+    <footer>Built to try one real change with <a href="https://orbi.build/?ref=gh-orbi-demo">Orbi</a>.</footer>
+  </main>
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>

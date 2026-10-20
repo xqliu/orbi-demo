@@ -1,0 +1,64 @@
+/* Orbi light design tokens: orbi-build/orbi-design-system. */
+:root {
+  --surface-page: #f6f8fa;
+  --surface-raised: #fff;
+  --ink: #1f2328;
+  --ink-muted: #59636e;
+  --border: #d1d9e0;
+  --accent: #1f883d;
+  --accent-hover: #1a7f37;
+  --focus: #0969da;
+  --danger: #d1242f;
+  --radius-control: 6px;
+  --radius-card: 8px;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--surface-page); color: var(--ink); font: 16px/1.6 system-ui, sans-serif; }
+main { max-width: 880px; margin: 1.5rem auto; padding: 0 1rem; }
+header { display: flex; justify-content: space-between; align-items: center; gap: .75rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+header a { color: var(--ink); font-weight: 600; text-decoration: none; }
+h1 { font-size: 1.4rem; margin: 1.25rem 0 .5rem; }
+h2 { font-size: 1.05rem; margin: 0 0 .5rem; }
+p { margin: .5rem 0 1rem; }
+a { color: var(--focus); overflow-wrap: anywhere; }
+.muted, footer { color: var(--ink-muted); }
+.card { background: var(--surface-raised); border: 1px solid var(--border); border-radius: var(--radius-card); padding: 1.25rem 1.5rem; }
+.section-label { color: var(--ink-muted); font-size: .8rem; letter-spacing: .04em; margin: 0 0 .5rem; }
+button, input { font: inherit; }
+.button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: .5rem 1rem; border: 1px solid var(--accent); border-radius: var(--radius-control); background: var(--accent); color: #fff; font-weight: 600; text-decoration: none; cursor: pointer; }
+.button:hover { background: var(--accent-hover); }
+.secondary { background: var(--surface-raised); color: var(--accent); }
+.secondary:hover { background: var(--surface-page); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.todo-form { display: flex; align-items: end; gap: .5rem; }
+.todo-form > div { flex: 1; min-width: 0; }
+label { display: block; }
+input[type=text] { background: var(--surface-raised); color: var(--ink); border: 1px solid var(--border); border-radius: var(--radius-control); padding: .5rem .75rem; min-height: 44px; min-width: 0; width: 100%; }
+input[aria-invalid=true] { border-color: var(--danger); }
+.error { color: var(--danger); }
+#input-error { margin: .5rem 0 0; }
+.todo-list { padding: 0; list-style: none; margin-bottom: 0; }
+.todo-list li { display: flex; align-items: center; gap: .75rem; padding: .75rem 0; border-bottom: 1px solid var(--border); }
+.todo-list label { display: flex; align-items: center; gap: .75rem; flex: 1; min-width: 0; min-height: 44px; cursor: pointer; }
+.todo-list span { min-width: 0; overflow-wrap: anywhere; }
+.todo-list input { width: 1.1rem; height: 1.1rem; flex: 0 0 1.1rem; accent-color: var(--accent); }
+.todo-list .done span { text-decoration: line-through; color: var(--ink-muted); }
+.todo-list .button { flex-shrink: 0; }
+.filters { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.25rem; }
+.filters [aria-pressed=true] { background: var(--ink); color: #fff; border-color: var(--ink); }
+#empty-list { margin-top: 1rem; }
+#app-status { min-height: 1.6em; margin-bottom: 0; }
+footer { margin: 1.25rem 0; font-size: .9rem; }
+[hidden] { display: none !important; }
+@media (max-width: 480px) {
+  .card { padding: 1rem .75rem; }
+  .todo-form { flex-direction: column; align-items: stretch; }
+  .todo-form .button { width: 100%; }
+  .todo-list li { gap: .5rem; }
+  .todo-list .button { padding-left: .5rem; padding-right: .5rem; }
+}
+.app-layout { display: grid; grid-template-columns: minmax(0, 1fr) 16rem; gap: 1.5rem; align-items: start; }
+.about { min-width: 0; padding-top: .25rem; }
+.about h2 { font-size: 1rem; margin: 0 0 .5rem; }
+.about p { margin: 0 0 .75rem; }
+@media (max-width: 700px) { .app-layout { grid-template-columns: minmax(0, 1fr); } }
