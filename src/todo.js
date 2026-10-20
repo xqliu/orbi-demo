@@ -20,6 +20,11 @@ export function clearCompleted(todos) {
   return todos.filter((t) => !t.done);
 }
 
+export function remainingLabel(todos) {
+  const count = todos.filter((t) => !t.done).length;
+  return `${count} ${count === 1 ? "item" : "items"} left`;
+}
+
 export function visibleTodos(todos, filter) {
   if (filter === "active") return todos.filter((t) => !t.done);
   if (filter === "done") return todos.filter((t) => t.done);

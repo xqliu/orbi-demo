@@ -59,7 +59,7 @@ Use `npm start` to serve the page over HTTP. Opening `index.html` directly preve
 
 Orbi posts progress on the issue, writes the change, and opens a pull request. A second AI reviewer checks the change. Orbi merges it once checks pass, unless your repository requires human approval. If it needs help, the dashboard and issue explain what is blocking it.
 
-You can also ask for a remaining-task count or for the list to survive a page refresh. These features are deliberately left out of the starting app so you have a change to try.
+You can also ask for the list to survive a page refresh. That feature is deliberately left out of the starting app so you have a change to try.
 
 ## 4. Open your delivered change
 

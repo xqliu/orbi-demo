@@ -49,6 +49,7 @@ input[aria-invalid=true] { border-color: var(--danger); }
 .filters [aria-pressed=true] { background: var(--ink); color: #fff; border-color: var(--ink); }
 .list-actions { display: flex; margin-top: .75rem; }
 #empty-list { margin-top: 1rem; }
+#todo-count { margin: 1rem 0 .25rem; }
 #app-status { min-height: 1.6em; margin-bottom: 0; }
 footer { margin: 1.25rem 0; font-size: .9rem; }
 [hidden] { display: none !important; }
