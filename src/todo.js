@@ -53,6 +53,15 @@ export function visibleTodos(todos, filter) {
   return [...todos.filter((t) => !t.done), ...todos.filter((t) => t.done)];
 }
 
+// Chinese status text shown next to every task title, so the row states the
+// task's status in words while the checkbox keeps carrying the checked state.
+export const STATUS_ACTIVE = "待完成";
+export const STATUS_DONE = "已完成";
+
+export function statusLabel(done) {
+  return done ? STATUS_DONE : STATUS_ACTIVE;
+}
+
 // Shown under the list whenever the current filter has no visible todos.
 export const EMPTY_FILTER_MESSAGE = "当前没有符合筛选条件的待办。";
 

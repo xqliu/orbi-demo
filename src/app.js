@@ -1,4 +1,4 @@
-import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage, deleteConfirmMessage, completionDate, completedLabel } from "./todo.js";
+import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage, deleteConfirmMessage, completionDate, completedLabel, statusLabel } from "./todo.js";
 
 // The two sample tasks start checked as examples, so they show today as their
 // completion day instead of a hard-coded date that would age badly.
@@ -46,6 +46,11 @@ function render() {
     });
     const title = document.createElement("span");
     title.textContent = todo.title;
+    // Plain text next to the title: the native checkbox stays the only focusable
+    // control and the only carrier of the checked state.
+    const state = document.createElement("span");
+    state.className = "status";
+    state.textContent = statusLabel(todo.done);
     const doneAt = completedLabel(todo);
     const del = document.createElement("button");
     del.type = "button";
@@ -62,7 +67,7 @@ function render() {
       focusTask("button", index);
       status.textContent = "Task deleted.";
     });
-    label.append(box, title);
+    label.append(box, title, state);
     if (doneAt) {
       const completed = document.createElement("span");
       completed.className = "completed-at";

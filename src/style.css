@@ -44,6 +44,10 @@ input[aria-invalid=true] { border-color: var(--danger); }
 .todo-list span { min-width: 0; overflow-wrap: anywhere; }
 .todo-list input { width: 1.1rem; height: 1.1rem; flex: 0 0 1.1rem; accent-color: var(--accent); }
 .todo-list .done span { text-decoration: line-through; color: var(--ink-muted); }
+/* The status text sits next to the title and states the task's status in words,
+   so it must stay readable instead of inheriting the title's line-through. */
+.todo-list .status { flex: 0 0 auto; color: var(--ink-muted); font-size: .85rem; }
+.todo-list .done .status { text-decoration: none; }
 /* The completion date is not part of the struck-through task title, and it keeps
    its full width: the title shrinks first, and the date moves to the next line
    on narrow screens instead of sliding under the Delete button. */

@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage, deleteConfirmMessage, completionDate, completedLabel, EMPTY_FILTER_MESSAGE } from "../src/todo.js";
+import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage, deleteConfirmMessage, completionDate, completedLabel, statusLabel, EMPTY_FILTER_MESSAGE, STATUS_ACTIVE, STATUS_DONE } from "../src/todo.js";
 
 test("addTodo appends a trimmed title with the next id", () => {
   const one = addTodo([], "  Buy milk ");
@@ -233,4 +233,27 @@ test("completion date survives filtering and keeps working with clearCompleted",
   assert.deepEqual(visibleTodos(todos, "active").map(completedLabel), [""]);
   todos = clearCompleted(todos);
   assert.deepEqual(todos.map(completedLabel), [""]);
+});
+
+test("statusLabel shows 待完成 for an unchecked task, including a newly added one", () => {
+  assert.equal(STATUS_ACTIVE, "待完成");
+  assert.equal(statusLabel(false), "待完成");
+  const todos = addTodo([], "Buy milk");
+  assert.equal(statusLabel(todos[0].done), "待完成");
+  assert.equal(statusLabel(visibleTodos(todos, "all")[0].done), "待完成");
+});
+
+test("statusLabel shows 已完成 once the task is checked", () => {
+  assert.equal(STATUS_DONE, "已完成");
+  assert.equal(statusLabel(true), "已完成");
+  const todos = toggleTodo(addTodo([], "Buy milk"), 1, new Date(2026, 9, 28));
+  assert.equal(statusLabel(todos[0].done), "已完成");
+  assert.equal(statusLabel(visibleTodos(todos, "all")[0].done), "已完成");
+});
+
+test("statusLabel returns to 待完成 when the task is unchecked again", () => {
+  const todos = toggleTodo(toggleTodo(addTodo([], "Buy milk"), 1, new Date(2026, 9, 28)), 1);
+  assert.equal(todos[0].done, false);
+  assert.equal(statusLabel(todos[0].done), "待完成");
+  assert.equal(statusLabel(visibleTodos(todos, "all")[0].done), "待完成");
 });
