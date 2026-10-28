@@ -73,3 +73,16 @@ export function emptyFilterMessage(visible) {
 export function deleteConfirmMessage(title) {
   return `Delete "${title}"? This cannot be undone.`;
 }
+
+// The Clear button next to the input is only usable while the input holds text,
+// so it can never wipe an empty field or look like it did something.
+export function canClearInput(value) {
+  return String(value) !== "";
+}
+
+// Clearing touches the input only: the tasks keep their content and order, and
+// the cursor stays where the user was typing instead of jumping to the button.
+export function clearInput(input) {
+  input.value = "";
+  input.focus();
+}
