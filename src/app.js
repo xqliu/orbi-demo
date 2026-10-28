@@ -1,4 +1,4 @@
-import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage, deleteConfirmMessage, completionDate, completedLabel, statusLabel } from "./todo.js";
+import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage, deleteConfirmMessage, completionDate, completedLabel, statusLabel, canClearInput, clearInput } from "./todo.js";
 
 // The two sample tasks start checked as examples, so they show today as their
 // completion day instead of a hard-coded date that would age badly.
@@ -20,6 +20,7 @@ const error = document.querySelector("#input-error");
 const empty = document.querySelector("#empty-list");
 const filters = document.querySelectorAll("[data-filter]");
 const clearButton = document.querySelector("#clear-completed");
+const clearInputButton = document.querySelector("#clear-input");
 const count = document.querySelector("#todo-count");
 
 // Rerendering removes focused controls. Return focus to the same task or its
@@ -91,7 +92,21 @@ function clearError() {
   error.hidden = true;
   input.removeAttribute("aria-invalid");
 }
-input.addEventListener("input", clearError);
+
+// Clear is usable only while there is text to clear, so keep it in step with
+// every value change: typing, deleting by hand, Add and Clear itself.
+function syncClearInputButton() {
+  clearInputButton.disabled = !canClearInput(input.value);
+}
+
+input.addEventListener("input", () => {
+  clearError();
+  syncClearInputButton();
+});
+clearInputButton.addEventListener("click", () => {
+  clearInput(input);
+  syncClearInputButton();
+});
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   if (!input.value.trim()) {
@@ -104,6 +119,7 @@ form.addEventListener("submit", (event) => {
   filter = "all";
   input.value = "";
   clearError();
+  syncClearInputButton();
   render();
   status.textContent = "Task added. Showing all tasks.";
   input.focus();
@@ -122,3 +138,5 @@ clearButton.addEventListener("click", () => {
   if (clearButton.disabled) input.focus();
 });
 render();
+// The input starts empty, so Clear starts disabled.
+syncClearInputButton();

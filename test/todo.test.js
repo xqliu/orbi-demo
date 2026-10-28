@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage, deleteConfirmMessage, completionDate, completedLabel, statusLabel, EMPTY_FILTER_MESSAGE, STATUS_ACTIVE, STATUS_DONE } from "../src/todo.js";
+import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage, deleteConfirmMessage, completionDate, completedLabel, statusLabel, canClearInput, clearInput, EMPTY_FILTER_MESSAGE, STATUS_ACTIVE, STATUS_DONE } from "../src/todo.js";
 
 test("addTodo appends a trimmed title with the next id", () => {
   const one = addTodo([], "  Buy milk ");
@@ -256,4 +256,27 @@ test("statusLabel returns to 待完成 when the task is unchecked again", () => 
   assert.equal(todos[0].done, false);
   assert.equal(statusLabel(todos[0].done), "待完成");
   assert.equal(statusLabel(visibleTodos(todos, "all")[0].done), "待完成");
+});
+
+// The Clear button next to the input: enabled only while the input holds text.
+test("canClearInput allows clearing a filled input and the cleared input is empty", () => {
+  assert.equal(canClearInput("买牛奶"), true);
+  const input = { value: "买牛奶", focus() { this.focused = true; } };
+  clearInput(input);
+  assert.equal(input.value, "");
+  assert.equal(canClearInput(input.value), false);
+});
+
+test("canClearInput disables clearing an empty input and clearing it changes nothing", () => {
+  assert.equal(canClearInput(""), false);
+  const input = { value: "", focus() { this.focused = true; } };
+  clearInput(input);
+  assert.equal(input.value, "");
+});
+
+test("clearInput leaves the focus in the input", () => {
+  const input = { value: "买牛奶", focused: false, focus() { this.focused = true; } };
+  clearInput(input);
+  assert.equal(input.value, "");
+  assert.equal(input.focused, true);
 });
