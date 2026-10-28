@@ -1,8 +1,11 @@
-import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage, deleteConfirmMessage } from "./todo.js";
+import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage, deleteConfirmMessage, completionDate, completedLabel } from "./todo.js";
 
+// The two sample tasks start checked as examples, so they show today as their
+// completion day instead of a hard-coded date that would age badly.
+const today = completionDate();
 let todos = [
-  { id: 1, title: "Sign in to Orbi Cloud", done: true },
-  { id: 2, title: "Connect your demo repository", done: true },
+  { id: 1, title: "Sign in to Orbi Cloud", done: true, completedAt: today },
+  { id: 2, title: "Connect your demo repository", done: true, completedAt: today },
   { id: 3, title: "Ask Orbi to add Clear completed", done: false },
   { id: 4, title: "Open your delivered change", done: false },
   { id: 5, title: "Connect your own project", done: false },
@@ -43,6 +46,7 @@ function render() {
     });
     const title = document.createElement("span");
     title.textContent = todo.title;
+    const doneAt = completedLabel(todo);
     const del = document.createElement("button");
     del.type = "button";
     del.className = "button secondary";
@@ -59,6 +63,12 @@ function render() {
       status.textContent = "Task deleted.";
     });
     label.append(box, title);
+    if (doneAt) {
+      const completed = document.createElement("span");
+      completed.className = "completed-at";
+      completed.textContent = doneAt;
+      label.append(completed);
+    }
     item.append(label, del);
     return item;
   }));

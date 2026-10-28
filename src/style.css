@@ -44,6 +44,8 @@ input[aria-invalid=true] { border-color: var(--danger); }
 .todo-list span { min-width: 0; overflow-wrap: anywhere; }
 .todo-list input { width: 1.1rem; height: 1.1rem; flex: 0 0 1.1rem; accent-color: var(--accent); }
 .todo-list .done span { text-decoration: line-through; color: var(--ink-muted); }
+/* The completion date is not part of the struck-through task title. */
+.todo-list .done .completed-at { display: inline-block; margin-left: auto; padding-left: .5rem; color: var(--ink-muted); font-size: .85rem; text-decoration: none; white-space: nowrap; }
 .todo-list .button { flex-shrink: 0; }
 .filters { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.25rem; }
 .filters [aria-pressed=true] { background: var(--ink); color: #fff; border-color: var(--ink); }
