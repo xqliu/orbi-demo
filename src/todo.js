@@ -1,4 +1,4 @@
-// Todo list logic. Pure functions over an array of { id, title, done }.
+// Todo list logic. Pure functions over an array of { id, title, done, completedAt? }.
 // The page (src/app.js) only renders what these return; test/todo.test.js covers them.
 
 export function addTodo(todos, title) {
@@ -8,8 +8,27 @@ export function addTodo(todos, title) {
   return [...todos, { id, title: text, done: false }];
 }
 
-export function toggleTodo(todos, id) {
-  return todos.map((t) => (t.id === id ? { ...t, done: !t.done } : t));
+// Completion date of a done todo, as the local calendar day YYYY-MM-DD.
+export function completionDate(now = new Date()) {
+  const pad = (value) => String(value).padStart(2, "0");
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+}
+
+export function completedLabel(todo) {
+  return todo.done && todo.completedAt ? `完成于 ${todo.completedAt}` : "";
+}
+
+// Checking a todo records the day it was completed; unchecking drops the date,
+// so a later completion shows its own day instead of a stale one.
+export function toggleTodo(todos, id, now = new Date()) {
+  return todos.map((t) => {
+    if (t.id !== id) return t;
+    if (t.done) {
+      const { completedAt, ...active } = t;
+      return { ...active, done: false };
+    }
+    return { ...t, done: true, completedAt: completionDate(now) };
+  });
 }
 
 export function removeTodo(todos, id) {

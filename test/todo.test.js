@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage, deleteConfirmMessage, EMPTY_FILTER_MESSAGE } from "../src/todo.js";
+import { addTodo, toggleTodo, removeTodo, visibleTodos, clearCompleted, remainingLabel, emptyFilterMessage, deleteConfirmMessage, completionDate, completedLabel, EMPTY_FILTER_MESSAGE } from "../src/todo.js";
 
 test("addTodo appends a trimmed title with the next id", () => {
   const one = addTodo([], "  Buy milk ");
@@ -192,4 +192,45 @@ test("visibleTodos applies the partition to the sample tasks on first load", () 
   assert.deepEqual(visibleTodos(sample, "all").map((t) => t.id), [3, 4, 5, 1, 2]);
   assert.deepEqual(visibleTodos(sample, "active").map((t) => t.id), [3, 4, 5]);
   assert.deepEqual(visibleTodos(sample, "done").map((t) => t.id), [1, 2]);
+});
+
+test("completionDate formats the local calendar day as YYYY-MM-DD", () => {
+  assert.equal(completionDate(new Date(2026, 0, 5)), "2026-01-05");
+  assert.equal(completionDate(new Date(2026, 9, 28, 23, 59)), "2026-10-28");
+  assert.equal(completionDate(new Date(2026, 11, 31)), "2026-12-31");
+});
+
+test("completedLabel shows the completion date only on a completed task that has one", () => {
+  assert.equal(completedLabel({ id: 1, title: "a", done: true, completedAt: "2026-10-28" }), "完成于 2026-10-28");
+  assert.equal(completedLabel({ id: 1, title: "a", done: false, completedAt: "2026-10-28" }), "");
+  assert.equal(completedLabel({ id: 1, title: "a", done: true }), "");
+});
+
+test("toggleTodo records the completion date and clears it when the task goes back to active", () => {
+  let todos = toggleTodo(addTodo(addTodo([], "a"), "b"), 2, new Date(2026, 9, 28));
+  assert.equal(todos[1].done, true);
+  assert.equal(todos[1].completedAt, "2026-10-28");
+  assert.equal(completedLabel(todos[1]), "完成于 2026-10-28");
+  todos = toggleTodo(todos, 2, new Date(2026, 10, 3));
+  assert.equal(todos[1].done, false);
+  assert.equal("completedAt" in todos[1], false);
+  assert.equal(completedLabel(todos[1]), "");
+  todos = toggleTodo(todos, 2, new Date(2026, 10, 3));
+  assert.equal(completedLabel(todos[1]), "完成于 2026-11-03");
+});
+
+test("toggleTodo stamps only the toggled task", () => {
+  const todos = toggleTodo(addTodo(addTodo([], "a"), "b"), 1, new Date(2026, 9, 28));
+  assert.equal(todos[0].completedAt, "2026-10-28");
+  assert.equal(todos[1].completedAt, undefined);
+  assert.equal(completedLabel(todos[1]), "");
+});
+
+test("completion date survives filtering and keeps working with clearCompleted", () => {
+  let todos = toggleTodo(addTodo(addTodo([], "a"), "b"), 1, new Date(2026, 9, 28));
+  assert.equal(completedLabel(visibleTodos(todos, "all")[1]), "完成于 2026-10-28");
+  assert.equal(completedLabel(visibleTodos(todos, "done")[0]), "完成于 2026-10-28");
+  assert.deepEqual(visibleTodos(todos, "active").map(completedLabel), [""]);
+  todos = clearCompleted(todos);
+  assert.deepEqual(todos.map(completedLabel), [""]);
 });
